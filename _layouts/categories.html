@@ -1,43 +1,21 @@
----
-layout: archive
----
-
-{{ content }}
-
-{% assign categories_max = 0 %}
-{% for category in site.categories %}
-  {% if category[1].size > categories_max %}
-    {% assign categories_max = category[1].size %}
-  {% endif %}
-{% endfor %}
-
-<ul class="taxonomy__index">
-  {% for i in (1..categories_max) reversed %}
-    {% for category in site.categories %}
-      {% if category[1].size == i %}
-        <li>
-          <a href="#{{ category[0] | slugify }}">
-            <strong>{{ category[0] }}</strong> <span class="taxonomy__count">{{ i }}</span>
-          </a>
-        </li>
-      {% endif %}
-    {% endfor %}
-  {% endfor %}
+<ul class="entry-meta inline-list">
+  {% for item in (0..site.categories.size) %}{% unless forloop.last %}
+    {% capture this_word %}{{ categories_list[item] | strip_newlines }}{% endcapture %}
+  	<li><a href="#{{ this_word }}" class="tag">
+    <span class="term">{{ this_word }}</span>
+    <span class="count">{{ site.categories[this_word].size }}</span>
+    </a></li>
+  {% endunless %}{% endfor %}
 </ul>
 
-{% assign entries_layout = page.entries_layout | default: 'list' %}
-{% for i in (1..categories_max) reversed %}
-  {% for category in site.categories %}
-    {% if category[1].size == i %}
-      <section id="{{ category[0] | slugify | downcase }}" class="taxonomy__section">
-        <h2 class="archive__subtitle">{{ category[0] }}</h2>
-        <div class="entries-{{ entries_layout }}">
-          {% for post in category.last %}
-            {% include archive-single.html type=entries_layout %}
-          {% endfor %}
-        </div>
-        <a href="#page-title" class="back-to-top">{{ site.data.ui-text[site.locale].back_to_top | default: 'Back to Top' }} &uarr;</a>
-      </section>
-    {% endif %}
-  {% endfor %}
-{% endfor %}
+{% for item in (0..site.categories.size) %}{% unless forloop.last %}
+  {% capture this_word %}{{ categories_list[item] | strip_newlines }}{% endcapture %}
+  <article>
+	  <a href="{{site.url}}/categories/{{this_word}}"><h2 id="{{ this_word }}" class="tag-heading">{{ this_word }}</h2></a>
+    <ul>
+    {% for post in site.categories[this_word] %}{% if post.title != null %}
+      <li class="entry-title"><a href="{{ site.url }}{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a></li>
+    {% endif %}{% endfor %}
+		</ul>
+    </article><!-- /.hentry -->
+{% endunless %}{% endfor %}
